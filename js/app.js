@@ -1,12 +1,12 @@
 "use strict";
 
-function init() {
-  const seatCount = VENUE.sections.reduce((total, section) => {
-    const perRow = section.blocks.reduce((sum, n) => sum + n, 0);
-    return total + perRow * section.rows.length;
-  }, 0);
+const state = {
+  seats: new Map()
+};
 
-  console.log(`${VENUE.name}: ${VENUE.sections.length} sections, ${seatCount} seats`);
+function init() {
+  state.seats = buildSeatModel(VENUE);
+  renderVenue(document.getElementById("venueCanvas"), VENUE, state.seats);
 }
 
 document.addEventListener("DOMContentLoaded", init);
