@@ -21,7 +21,40 @@
   </header>
 
   <main class="app">
-    <p>Venue map coming soon.</p>
+    <section class="panel venue-panel" aria-labelledby="venueHeading">
+      <div class="panel-header">
+        <h2 id="venueHeading" class="panel-title">Venue map</h2>
+      </div>
+
+      <div class="viewport" id="viewport">
+        <div class="venue-canvas" id="venueCanvas">
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="panel details-panel" aria-labelledby="detailsHeading">
+        <div class="panel-header">
+          <h2 id="detailsHeading" class="panel-title">Seat details</h2>
+        </div>
+        <div class="details-body" id="seatDetails" aria-live="polite">
+          <p class="placeholder">Select a seat on the map to see its details and price.</p>
+        </div>
+      </section>
+
+      <section class="panel cart-panel" aria-labelledby="cartHeading">
+        <div class="panel-header">
+          <h2 id="cartHeading" class="panel-title">Your tickets</h2>
+          <span class="badge" id="cartCount">0</span>
+        </div>
+        <ul class="cart-list" id="cartList"></ul>
+        <p class="placeholder" id="cartEmpty">No tickets in your cart yet.</p>
+        <div class="cart-total">
+          <span>Total</span>
+          <strong id="cartTotal">0 AZN</strong>
+        </div>
+      </section>
+    </aside>
   </main>
 
   <script src="js/app.js"></script>
