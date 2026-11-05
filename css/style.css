@@ -1,0 +1,84 @@
+:root {
+  --bg: #0f1220;
+  --bg-elevated: #171b2e;
+  --bg-soft: #1f2440;
+  --border: #2b3152;
+  --text: #eceaf3;
+  --text-muted: #9aa0b8;
+  --accent: #e8b04a;
+
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+
+  --radius: 12px;
+  --radius-sm: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  font-size: 26px;
+  color: var(--accent);
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.3px;
+}
+
+.brand-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.app {
+  padding: 24px;
+}
