@@ -294,6 +294,13 @@ button {
 .seat--in-cart {
   background: var(--in-cart);
   color: #0f1220;
+  font-size: 0;
+}
+
+.seat--in-cart::after {
+  content: "✓";
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .seat--unavailable {
@@ -359,6 +366,16 @@ button {
 .swatch--in-cart     { background: var(--in-cart); }
 .swatch--unavailable { background: var(--unavailable); }
 .swatch--inspected   { background: var(--inspected); }
+
+.swatch--in-cart::after {
+  content: "✓";
+  display: block;
+  color: #0f1220;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
 
 .ticket-card {
   position: relative;
@@ -455,6 +472,24 @@ button {
   color: var(--text);
 }
 
+.details-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn--primary {
+  flex: 1 1 auto;
+  background: var(--accent);
+  color: var(--bg);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #f2c26a;
+}
+
 .btn--icon {
   width: 36px;
   height: 36px;
@@ -481,9 +516,66 @@ button {
 }
 
 .cart-list {
-  list-style: none;
+  max-height: 320px;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-item:last-child {
+  border-bottom: 0;
+}
+
+.cart-item-marker {
+  flex: none;
+  width: 6px;
+  align-self: stretch;
+  border-radius: 3px;
+  background: var(--section-color);
+}
+
+.cart-item-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cart-item-info:hover .cart-item-title {
+  color: var(--accent);
+}
+
+.cart-item-info:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cart-item-title {
+  font-weight: 600;
+}
+
+.cart-item-section {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cart-item-price {
+  flex: none;
+  font-weight: 600;
 }
 
 .cart-total {

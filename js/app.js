@@ -2,7 +2,8 @@
 
 const state = {
   seats: new Map(),
-  inspectedId: null
+  inspectedId: null,
+  cart: []
 };
 
 const dom = {};
@@ -10,14 +11,20 @@ const dom = {};
 function init() {
   dom.canvas = document.getElementById("venueCanvas");
   dom.details = document.getElementById("seatDetails");
+  dom.cartList = document.getElementById("cartList");
+  dom.cartCount = document.getElementById("cartCount");
+  dom.cartTotal = document.getElementById("cartTotal");
+  dom.cartEmpty = document.getElementById("cartEmpty");
 
   state.seats = buildSeatModel(VENUE);
   renderVenue(dom.canvas, VENUE, state.seats);
   renderDetails();
+  renderCart();
   initNavigation();
 
   dom.canvas.addEventListener("click", onSeatClick);
   dom.details.addEventListener("click", onDetailsClick);
+  dom.cartList.addEventListener("click", onCartListClick);
   document.addEventListener("keydown", onKeyDown);
 }
 
@@ -28,7 +35,12 @@ function onSeatClick(event) {
 }
 
 function onDetailsClick(event) {
-  if (event.target.closest("[data-action='clear']")) {
+  const actionButton = event.target.closest("[data-action]");
+  if (!actionButton) return;
+
+  if (actionButton.dataset.action === "add") {
+    addToCart(state.inspectedId);
+  } else if (actionButton.dataset.action === "clear") {
     clearInspection();
   }
 }
@@ -71,6 +83,12 @@ const STATUS_NOTE = {
   [SEAT_STATUS.IN_CART]: "This seat is already in your cart.",
   [SEAT_STATUS.UNAVAILABLE]: "This seat has already been sold and cannot be booked."
 };
+
+function getAddButtonText(seat) {
+  if (seat.status === SEAT_STATUS.IN_CART) return "Already in cart";
+  if (seat.status === SEAT_STATUS.UNAVAILABLE) return "Unavailable";
+  return `Add to cart — ${formatPrice(seat.price)}`;
+}
 
 function renderDetails() {
   const seat = state.seats.get(state.inspectedId);
@@ -123,13 +141,24 @@ function renderDetails() {
   note.className = `status-note status-note--${seat.status}`;
   note.textContent = STATUS_NOTE[seat.status];
 
+  const add = document.createElement("button");
+  add.type = "button";
+  add.className = "btn btn--primary";
+  add.dataset.action = "add";
+  add.textContent = getAddButtonText(seat);
+  add.disabled = seat.status !== SEAT_STATUS.AVAILABLE;
+
   const clear = document.createElement("button");
   clear.type = "button";
   clear.className = "btn btn--ghost";
   clear.dataset.action = "clear";
   clear.textContent = "Clear selection";
 
-  dom.details.append(card, note, clear);
+  const actions = document.createElement("div");
+  actions.className = "details-actions";
+  actions.append(add, clear);
+
+  dom.details.append(card, note, actions);
 }
 
 function formatPrice(amount) {
