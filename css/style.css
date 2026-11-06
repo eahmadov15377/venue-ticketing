@@ -490,6 +490,16 @@ button {
   background: #f2c26a;
 }
 
+.btn--small {
+  flex: none;
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.btn[hidden] {
+  display: none;
+}
+
 .btn--icon {
   width: 36px;
   height: 36px;
@@ -590,6 +600,11 @@ button {
 .cart-total strong {
   font-size: 20px;
   color: var(--accent);
+}
+
+.cart-clear {
+  width: 100%;
+  margin-top: 12px;
 }
 
 @media (max-width: 960px) {

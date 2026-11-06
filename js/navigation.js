@@ -69,9 +69,17 @@ function revealFocusedSeat(event) {
   if (!event.target.matches(".seat:focus-visible")) return;
 
   const seatBox = event.target.getBoundingClientRect();
-  const viewportBox = navDom.viewport.getBoundingClientRect();
-  const dx = distanceIntoRange(seatBox.left, seatBox.right, viewportBox.left, viewportBox.right);
-  const dy = distanceIntoRange(seatBox.top, seatBox.bottom, viewportBox.top, viewportBox.bottom);
+  const canvasBox = navDom.canvas.getBoundingClientRect();
+  const renderedScale = canvasBox.width / navDom.canvas.offsetWidth;
+  const targetRatio = view.scale / renderedScale;
+
+  const left = view.x + (seatBox.left - canvasBox.left) * targetRatio;
+  const right = view.x + (seatBox.right - canvasBox.left) * targetRatio;
+  const top = view.y + (seatBox.top - canvasBox.top) * targetRatio;
+  const bottom = view.y + (seatBox.bottom - canvasBox.top) * targetRatio;
+
+  const dx = distanceIntoRange(left, right, 0, navDom.viewport.clientWidth);
+  const dy = distanceIntoRange(top, bottom, 0, navDom.viewport.clientHeight);
 
   if (dx !== 0 || dy !== 0) {
     runAnimated(() => panBy(dx, dy));

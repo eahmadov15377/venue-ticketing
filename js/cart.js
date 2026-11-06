@@ -8,10 +8,36 @@ function addToCart(seatId) {
 
   seat.status = SEAT_STATUS.IN_CART;
   state.cart.push(seat.id);
-  updateSeatElement(seat, seat.id === state.inspectedId);
+  refreshUI([seat]);
+  return true;
+}
+
+function removeFromCart(seatId) {
+  if (!state.cart.includes(seatId)) return false;
+
+  const seat = state.seats.get(seatId);
+  seat.status = SEAT_STATUS.AVAILABLE;
+  state.cart = state.cart.filter((id) => id !== seatId);
+  refreshUI([seat]);
+  return true;
+}
+
+function clearCart() {
+  const removedSeats = state.cart.map((seatId) => state.seats.get(seatId));
+
+  removedSeats.forEach((seat) => {
+    seat.status = SEAT_STATUS.AVAILABLE;
+  });
+  state.cart = [];
+  refreshUI(removedSeats);
+}
+
+function refreshUI(changedSeats) {
+  changedSeats.forEach((seat) => {
+    updateSeatElement(seat, seat.id === state.inspectedId);
+  });
   renderCart();
   renderDetails();
-  return true;
 }
 
 function renderCart() {
@@ -22,6 +48,7 @@ function renderCart() {
   dom.cartCount.textContent = String(cartSeats.length);
   dom.cartTotal.textContent = formatPrice(total);
   dom.cartEmpty.hidden = cartSeats.length > 0;
+  dom.cartClear.hidden = cartSeats.length === 0;
 }
 
 function createCartItem(seat) {
@@ -53,13 +80,25 @@ function createCartItem(seat) {
   price.className = "cart-item-price";
   price.textContent = formatPrice(seat.price);
 
-  item.append(marker, info, price);
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "btn btn--ghost btn--small";
+  remove.dataset.action = "remove";
+  remove.dataset.seatId = seat.id;
+  remove.setAttribute("aria-label", `Remove row ${seat.row} seat ${seat.number}`);
+  remove.textContent = "Remove";
+
+  item.append(marker, info, price, remove);
   return item;
 }
 
 function onCartListClick(event) {
-  const inspectButton = event.target.closest("[data-action='inspect']");
-  if (inspectButton) {
-    inspectSeat(inspectButton.dataset.seatId);
+  const actionButton = event.target.closest("[data-action]");
+  if (!actionButton) return;
+
+  if (actionButton.dataset.action === "remove") {
+    removeFromCart(actionButton.dataset.seatId);
+  } else if (actionButton.dataset.action === "inspect") {
+    inspectSeat(actionButton.dataset.seatId);
   }
 }

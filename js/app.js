@@ -15,6 +15,7 @@ function init() {
   dom.cartCount = document.getElementById("cartCount");
   dom.cartTotal = document.getElementById("cartTotal");
   dom.cartEmpty = document.getElementById("cartEmpty");
+  dom.cartClear = document.getElementById("cartClear");
 
   state.seats = buildSeatModel(VENUE);
   renderVenue(dom.canvas, VENUE, state.seats);
@@ -25,6 +26,7 @@ function init() {
   dom.canvas.addEventListener("click", onSeatClick);
   dom.details.addEventListener("click", onDetailsClick);
   dom.cartList.addEventListener("click", onCartListClick);
+  dom.cartClear.addEventListener("click", clearCart);
   document.addEventListener("keydown", onKeyDown);
 }
 
