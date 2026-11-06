@@ -24,6 +24,16 @@
     <section class="panel venue-panel" aria-labelledby="venueHeading">
       <div class="panel-header">
         <h2 id="venueHeading" class="panel-title">Venue map</h2>
+        <div class="map-toolbar" id="mapToolbar" role="toolbar" aria-label="Map controls">
+          <button type="button" class="btn btn--icon" data-nav="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+          <button type="button" class="btn btn--icon" data-nav="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+          <output class="zoom-level" id="zoomLevel" aria-label="Zoom level">100%</output>
+          <button type="button" class="btn btn--icon" data-nav="move-up" aria-label="Move up" title="Move up">↑</button>
+          <button type="button" class="btn btn--icon" data-nav="move-down" aria-label="Move down" title="Move down">↓</button>
+          <button type="button" class="btn btn--icon" data-nav="move-left" aria-label="Move left" title="Move left">←</button>
+          <button type="button" class="btn btn--icon" data-nav="move-right" aria-label="Move right" title="Move right">→</button>
+          <button type="button" class="btn btn--ghost" data-nav="reset" aria-label="Reset and center view" title="Reset and center view">Reset view</button>
+        </div>
       </div>
 
       <div class="viewport" id="viewport">
@@ -68,6 +78,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/venue.js"></script>
+  <script src="js/navigation.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

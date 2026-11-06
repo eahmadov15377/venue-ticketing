@@ -14,6 +14,7 @@ function init() {
   state.seats = buildSeatModel(VENUE);
   renderVenue(dom.canvas, VENUE, state.seats);
   renderDetails();
+  initNavigation();
 
   dom.canvas.addEventListener("click", onSeatClick);
   dom.details.addEventListener("click", onDetailsClick);
