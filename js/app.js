@@ -19,6 +19,7 @@ function init() {
 
   state.seats = buildSeatModel(VENUE);
   renderVenue(dom.canvas, VENUE, state.seats);
+  loadCart();
   renderDetails();
   renderCart();
   initNavigation();

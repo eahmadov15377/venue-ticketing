@@ -8,6 +8,7 @@ function addToCart(seatId) {
 
   seat.status = SEAT_STATUS.IN_CART;
   state.cart.push(seat.id);
+  saveCart();
   refreshUI([seat]);
   return true;
 }
@@ -18,6 +19,7 @@ function removeFromCart(seatId) {
   const seat = state.seats.get(seatId);
   seat.status = SEAT_STATUS.AVAILABLE;
   state.cart = state.cart.filter((id) => id !== seatId);
+  saveCart();
   refreshUI([seat]);
   return true;
 }
@@ -29,6 +31,7 @@ function clearCart() {
     seat.status = SEAT_STATUS.AVAILABLE;
   });
   state.cart = [];
+  saveCart();
   refreshUI(removedSeats);
 }
 
