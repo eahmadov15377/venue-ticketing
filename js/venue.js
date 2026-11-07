@@ -6,6 +6,12 @@ const SEAT_STATUS = {
   UNAVAILABLE: "unavailable"
 };
 
+const STATUS_TEXT = {
+  [SEAT_STATUS.AVAILABLE]: "Available",
+  [SEAT_STATUS.IN_CART]: "In your cart",
+  [SEAT_STATUS.UNAVAILABLE]: "Unavailable"
+};
+
 function buildSeatModel(venue) {
   const seats = new Map();
   const unavailable = new Set(venue.unavailable);
@@ -113,10 +119,7 @@ function createSeatButton(seat, number, seatsPerRow, currency) {
   button.className = "seat";
   button.dataset.seatId = seat.id;
   button.textContent = seat.number;
-  button.setAttribute(
-    "aria-label",
-    `${seat.sectionName}, row ${seat.row}, seat ${seat.number}, ${seat.price} ${currency}`
-  );
+  button.dataset.label = `${seat.sectionName}, row ${seat.row}, seat ${seat.number}, ${seat.price} ${currency}`;
 
   const middle = (seatsPerRow + 1) / 2;
   const t = (number - middle) / (middle - 1);
@@ -136,6 +139,7 @@ function updateSeatElement(seat, isInspected = false) {
   el.classList.toggle("seat--unavailable", seat.status === SEAT_STATUS.UNAVAILABLE);
   el.classList.toggle("seat--inspected", isInspected);
 
+  el.setAttribute("aria-label", `${el.dataset.label}, ${STATUS_TEXT[seat.status]}`);
   el.setAttribute("aria-pressed", String(isInspected));
   el.setAttribute("aria-disabled", String(seat.status === SEAT_STATUS.UNAVAILABLE));
 }

@@ -21,6 +21,18 @@ const NAV_ACTIONS = {
   reset: () => resetView()
 };
 
+const NAV_SHORTCUTS = {
+  "+": "zoom-in",
+  "=": "zoom-in",
+  "-": "zoom-out",
+  "_": "zoom-out",
+  ArrowUp: "move-up",
+  ArrowDown: "move-down",
+  ArrowLeft: "move-left",
+  ArrowRight: "move-right",
+  "0": "reset"
+};
+
 const view = {
   scale: 1,
   x: 0,
@@ -49,7 +61,12 @@ function initNavigation() {
 function onToolbarClick(event) {
   const button = event.target.closest("[data-nav]");
   if (!button) return;
-  runAnimated(NAV_ACTIONS[button.dataset.nav]);
+  runNavAction(button.dataset.nav);
+}
+
+function runNavAction(actionName) {
+  const action = NAV_ACTIONS[actionName];
+  if (action) runAnimated(action);
 }
 
 function onWindowResize() {
@@ -67,8 +84,11 @@ function onWindowResize() {
 
 function revealFocusedSeat(event) {
   if (!event.target.matches(".seat:focus-visible")) return;
+  revealElement(event.target);
+}
 
-  const seatBox = event.target.getBoundingClientRect();
+function revealElement(element) {
+  const seatBox = element.getBoundingClientRect();
   const canvasBox = navDom.canvas.getBoundingClientRect();
   const renderedScale = canvasBox.width / navDom.canvas.offsetWidth;
   const targetRatio = view.scale / renderedScale;
@@ -134,9 +154,21 @@ function applyView() {
 }
 
 function updateNavControls() {
+  const isZoomInLimit = view.scale >= NAV_CONFIG.maxScale;
+  const isZoomOutLimit = view.scale <= view.minScale;
+  const focusedButton = document.activeElement;
+  const losesFocus =
+    (isZoomInLimit && focusedButton === navDom.zoomIn) ||
+    (isZoomOutLimit && focusedButton === navDom.zoomOut);
+
   navDom.zoomLevel.textContent = `${Math.round(view.scale * 100)}%`;
-  navDom.zoomIn.disabled = view.scale >= NAV_CONFIG.maxScale;
-  navDom.zoomOut.disabled = view.scale <= view.minScale;
+  navDom.zoomIn.disabled = isZoomInLimit;
+  navDom.zoomOut.disabled = isZoomOutLimit;
+
+  if (losesFocus) {
+    const otherZoomButton = focusedButton === navDom.zoomIn ? navDom.zoomOut : navDom.zoomIn;
+    otherZoomButton.focus({ preventScroll: true });
+  }
 }
 
 function computeFitScale() {

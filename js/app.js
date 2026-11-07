@@ -16,6 +16,7 @@ function init() {
   dom.cartTotal = document.getElementById("cartTotal");
   dom.cartEmpty = document.getElementById("cartEmpty");
   dom.cartClear = document.getElementById("cartClear");
+  dom.cartHeading = document.getElementById("cartHeading");
 
   state.seats = buildSeatModel(VENUE);
   renderVenue(dom.canvas, VENUE, state.seats);
@@ -27,7 +28,7 @@ function init() {
   dom.canvas.addEventListener("click", onSeatClick);
   dom.details.addEventListener("click", onDetailsClick);
   dom.cartList.addEventListener("click", onCartListClick);
-  dom.cartClear.addEventListener("click", clearCart);
+  dom.cartClear.addEventListener("click", onClearCartClick);
   document.addEventListener("keydown", onKeyDown);
 }
 
@@ -49,9 +50,26 @@ function onDetailsClick(event) {
 }
 
 function onKeyDown(event) {
+  if (event.ctrlKey || event.metaKey || event.altKey || isEditableTarget(event.target)) return;
+
   if (event.key === "Escape") {
     clearInspection();
+    return;
   }
+
+  const navAction = NAV_SHORTCUTS[event.key];
+  if (!navAction) return;
+
+  event.preventDefault();
+  runNavAction(navAction);
+}
+
+function isEditableTarget(target) {
+  return target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
+}
+
+function focusWithoutScroll(element) {
+  if (element) element.focus({ preventScroll: true });
 }
 
 function inspectSeat(seatId) {
@@ -70,16 +88,13 @@ function clearInspection() {
   const previous = state.seats.get(state.inspectedId);
   if (!previous) return;
 
+  const hadFocusInDetails = dom.details.contains(document.activeElement);
   state.inspectedId = null;
   updateSeatElement(previous, false);
   renderDetails();
-}
 
-const STATUS_TEXT = {
-  [SEAT_STATUS.AVAILABLE]: "Available",
-  [SEAT_STATUS.IN_CART]: "In your cart",
-  [SEAT_STATUS.UNAVAILABLE]: "Unavailable"
-};
+  if (hadFocusInDetails) focusWithoutScroll(previous.element);
+}
 
 const STATUS_NOTE = {
   [SEAT_STATUS.AVAILABLE]: "This seat is free to book.",
@@ -95,6 +110,9 @@ function getAddButtonText(seat) {
 
 function renderDetails() {
   const seat = state.seats.get(state.inspectedId);
+  const focusedAction = dom.details.contains(document.activeElement)
+    ? document.activeElement.dataset.action
+    : null;
   dom.details.innerHTML = "";
 
   if (!seat) {
@@ -162,6 +180,13 @@ function renderDetails() {
   actions.append(add, clear);
 
   dom.details.append(card, note, actions);
+
+  if (focusedAction) restoreDetailsFocus(focusedAction);
+}
+
+function restoreDetailsFocus(action) {
+  const sameButton = dom.details.querySelector(`[data-action='${action}']:not(:disabled)`);
+  focusWithoutScroll(sameButton || dom.details.querySelector("[data-action='clear']"));
 }
 
 function formatPrice(amount) {

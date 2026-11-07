@@ -529,6 +529,10 @@ button {
   outline-offset: 2px;
 }
 
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
 .cart-list {
   max-height: 320px;
   margin: 0;

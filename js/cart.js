@@ -99,9 +99,25 @@ function onCartListClick(event) {
   const actionButton = event.target.closest("[data-action]");
   if (!actionButton) return;
 
+  const seatId = actionButton.dataset.seatId;
+
   if (actionButton.dataset.action === "remove") {
-    removeFromCart(actionButton.dataset.seatId);
+    const removeButtons = [...dom.cartList.querySelectorAll("[data-action='remove']")];
+    const removedIndex = removeButtons.indexOf(actionButton);
+    if (removeFromCart(seatId)) focusAfterRemoval(removedIndex);
   } else if (actionButton.dataset.action === "inspect") {
-    inspectSeat(actionButton.dataset.seatId);
+    inspectSeat(seatId);
+    revealElement(state.seats.get(seatId).element);
   }
+}
+
+function onClearCartClick() {
+  clearCart();
+  focusWithoutScroll(dom.cartHeading);
+}
+
+function focusAfterRemoval(removedIndex) {
+  const remainingButtons = dom.cartList.querySelectorAll("[data-action='remove']");
+  const nextButton = remainingButtons[Math.min(removedIndex, remainingButtons.length - 1)];
+  focusWithoutScroll(nextButton || dom.cartHeading);
 }
