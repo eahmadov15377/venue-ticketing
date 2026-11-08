@@ -105,7 +105,7 @@ const STATUS_NOTE = {
 function getAddButtonText(seat) {
   if (seat.status === SEAT_STATUS.IN_CART) return "Already in cart";
   if (seat.status === SEAT_STATUS.UNAVAILABLE) return "Unavailable";
-  return `Add to cart — ${formatPrice(seat.price)}`;
+  return `Add to cart: ${formatPrice(seat.price)}`;
 }
 
 function renderDetails() {

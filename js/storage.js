@@ -1,6 +1,6 @@
 "use strict";
 
-const CART_STORAGE_KEY = "grandAurora.cart.v1";
+const CART_STORAGE_KEY = "grandAda.cart.v1";
 
 function saveCart() {
   try {

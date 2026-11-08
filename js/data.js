@@ -1,7 +1,7 @@
 "use strict";
 
 const VENUE = {
-  name: "Grand Aurora Theatre",
+  name: "Grand ADA Theater",
   currency: "AZN",
 
   blockNames: ["Left", "Centre", "Right"],

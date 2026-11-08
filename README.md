@@ -1,4 +1,4 @@
-# Grand Aurora Theatre — Interactive Ticketing
+# Grand ADA Theater: Interactive Ticketing
 
 A front-end ticket-selection website for a theatre-style venue, built with plain
 HTML, CSS and JavaScript (no frameworks, no build step, no backend). Visitors
