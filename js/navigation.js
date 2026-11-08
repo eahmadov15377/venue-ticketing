@@ -8,7 +8,11 @@ const NAV_CONFIG = {
   fitPadding: 16,
   minVisiblePixels: 80,
   revealMargin: 24,
-  resizeDebounceMs: 150
+  resizeDebounceMs: 150,
+  wheelZoomSpeed: 0.0015,
+  pinchZoomSpeed: 0.01,
+  maxWheelDelta: 200,
+  wheelLineHeight: 16
 };
 
 const NAV_ACTIONS = {
@@ -53,6 +57,7 @@ function initNavigation() {
 
   navDom.toolbar.addEventListener("click", onToolbarClick);
   navDom.canvas.addEventListener("focusin", revealFocusedSeat);
+  navDom.viewport.addEventListener("wheel", onViewportWheel, { passive: false });
   window.addEventListener("resize", debounce(onWindowResize, NAV_CONFIG.resizeDebounceMs));
 
   resetView();
@@ -80,6 +85,38 @@ function onWindowResize() {
   view.minScale = computeFitScale() * NAV_CONFIG.minScaleRatio;
   view.scale = clampScale(view.scale);
   applyView();
+}
+
+function onViewportWheel(event) {
+  event.preventDefault();
+  setAnimated(false);
+
+  const deltaX = wheelDeltaInPixels(event.deltaX, event.deltaMode);
+  const deltaY = wheelDeltaInPixels(event.deltaY, event.deltaMode);
+
+  if (!event.ctrlKey && Math.abs(deltaX) > Math.abs(deltaY)) {
+    panBy(-deltaX, 0);
+    return;
+  }
+
+  const speed = event.ctrlKey ? NAV_CONFIG.pinchZoomSpeed : NAV_CONFIG.wheelZoomSpeed;
+  const limitedDelta = Math.max(-NAV_CONFIG.maxWheelDelta, Math.min(NAV_CONFIG.maxWheelDelta, deltaY));
+  const origin = toViewportPoint(event.clientX, event.clientY);
+  zoomBy(Math.exp(-limitedDelta * speed), origin.x, origin.y);
+}
+
+function wheelDeltaInPixels(delta, deltaMode) {
+  if (deltaMode === WheelEvent.DOM_DELTA_LINE) return delta * NAV_CONFIG.wheelLineHeight;
+  if (deltaMode === WheelEvent.DOM_DELTA_PAGE) return delta * navDom.viewport.clientHeight;
+  return delta;
+}
+
+function toViewportPoint(clientX, clientY) {
+  const box = navDom.viewport.getBoundingClientRect();
+  return {
+    x: clientX - box.left - navDom.viewport.clientLeft,
+    y: clientY - box.top - navDom.viewport.clientTop
+  };
 }
 
 function revealFocusedSeat(event) {
