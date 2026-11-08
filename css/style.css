@@ -178,6 +178,9 @@ button {
   overflow: hidden;
   overflow: clip;
   touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
   border-radius: var(--radius-sm);
   background:
     radial-gradient(ellipse at top, #1d2245 0%, transparent 60%),
@@ -196,6 +199,11 @@ button {
 
 .venue-canvas--animated {
   transition: transform 0.2s ease;
+}
+
+.viewport--dragging,
+.viewport--dragging .seat {
+  cursor: grabbing;
 }
 
 .stage {

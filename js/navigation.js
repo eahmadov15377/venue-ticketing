@@ -12,7 +12,8 @@ const NAV_CONFIG = {
   wheelZoomSpeed: 0.0015,
   pinchZoomSpeed: 0.01,
   maxWheelDelta: 200,
-  wheelLineHeight: 16
+  wheelLineHeight: 16,
+  dragThreshold: 5
 };
 
 const NAV_ACTIONS = {
@@ -47,6 +48,16 @@ const view = {
 
 const navDom = {};
 
+const drag = {
+  pointerId: null,
+  startX: 0,
+  startY: 0,
+  lastX: 0,
+  lastY: 0,
+  isDragging: false,
+  suppressNextClick: false
+};
+
 function initNavigation() {
   navDom.viewport = document.getElementById("viewport");
   navDom.canvas = document.getElementById("venueCanvas");
@@ -58,6 +69,11 @@ function initNavigation() {
   navDom.toolbar.addEventListener("click", onToolbarClick);
   navDom.canvas.addEventListener("focusin", revealFocusedSeat);
   navDom.viewport.addEventListener("wheel", onViewportWheel, { passive: false });
+  navDom.viewport.addEventListener("pointerdown", onDragStart);
+  window.addEventListener("pointermove", onDragMove);
+  window.addEventListener("pointerup", onDragEnd);
+  window.addEventListener("pointercancel", onDragEnd);
+  navDom.viewport.addEventListener("click", suppressClickAfterDrag, true);
   window.addEventListener("resize", debounce(onWindowResize, NAV_CONFIG.resizeDebounceMs));
 
   resetView();
@@ -103,6 +119,59 @@ function onViewportWheel(event) {
   const limitedDelta = Math.max(-NAV_CONFIG.maxWheelDelta, Math.min(NAV_CONFIG.maxWheelDelta, deltaY));
   const origin = toViewportPoint(event.clientX, event.clientY);
   zoomBy(Math.exp(-limitedDelta * speed), origin.x, origin.y);
+}
+
+function onDragStart(event) {
+  if (event.button !== 0 || drag.pointerId !== null) return;
+
+  drag.pointerId = event.pointerId;
+  drag.startX = event.clientX;
+  drag.startY = event.clientY;
+  drag.lastX = event.clientX;
+  drag.lastY = event.clientY;
+  drag.isDragging = false;
+  drag.suppressNextClick = false;
+}
+
+function onDragMove(event) {
+  if (event.pointerId !== drag.pointerId) return;
+
+  if (!drag.isDragging) {
+    const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
+    if (distance < NAV_CONFIG.dragThreshold) return;
+
+    drag.isDragging = true;
+    navDom.viewport.setPointerCapture(event.pointerId);
+    navDom.viewport.classList.add("viewport--dragging");
+    setAnimated(false);
+  }
+
+  panBy(event.clientX - drag.lastX, event.clientY - drag.lastY);
+  drag.lastX = event.clientX;
+  drag.lastY = event.clientY;
+}
+
+function onDragEnd(event) {
+  if (event.pointerId !== drag.pointerId) return;
+
+  if (drag.isDragging) {
+    drag.suppressNextClick = true;
+    navDom.viewport.classList.remove("viewport--dragging");
+    if (navDom.viewport.hasPointerCapture(event.pointerId)) {
+      navDom.viewport.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  drag.pointerId = null;
+  drag.isDragging = false;
+}
+
+function suppressClickAfterDrag(event) {
+  if (!drag.suppressNextClick) return;
+
+  drag.suppressNextClick = false;
+  event.stopPropagation();
+  event.preventDefault();
 }
 
 function wheelDeltaInPixels(delta, deltaMode) {
